@@ -1,0 +1,13 @@
+{
+  "name": "ts-goldcarrot/laravel-base",
+  "description": "Laravel base class helpers",
+  "require": {
+    "php": "^8.0",
+    "laravel/framework": "^8.34"
+  },
+  "autoload": {
+    "psr-4": {
+      "GoldcarrotLaravel\\": "src/"
+    }
+  }
+}
