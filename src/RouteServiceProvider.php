@@ -2,6 +2,7 @@
 
 namespace GoldcarrotLaravel;
 
+use Arr;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\File;
@@ -10,26 +11,11 @@ use Illuminate\Support\Str;
 
 class RouteServiceProvider extends ServiceProvider
 {
-    protected $namespace;
-    protected array $baseMiddleware;
-    protected string $routesDirectory = 'routes';
-    protected string $basePath;
-
-    public function __construct($app)
-    {
-        $this->namespace = config('routes.baseNamespace', 'App\Http\Controllers');
-        $this->baseMiddleware = config('routes.middleware', ['web']);
-        $this->basePath = config('routes.basePath');
-
-        parent::__construct($app);
-    }
-
     public function boot(): void
     {
         $this->publishes([
             __DIR__ . '/../config/routes.php' => config_path('routes.php'),
         ], 'config');
-
     }
 
     public function register(): void
@@ -43,14 +29,13 @@ class RouteServiceProvider extends ServiceProvider
     private function mapRoutes($path, $namespace, $prefix): void
     {
         Route::namespace($namespace)
-            ->middleware($this->baseMiddleware)
+            ->middleware(config('routes.middleware', ['web']))
             ->prefix($prefix)
             ->group(base_path($path));
     }
 
     private function normalizePath(string $path): string
     {
-        $path = str_replace($this->basePath, null, $path);
         return trim(preg_replace('/[\/|\\\]+/', '/', $path), '/');
     }
 
@@ -62,7 +47,7 @@ class RouteServiceProvider extends ServiceProvider
     private function normalizeNamespace(string $dirname): string
     {
         return $this
-            ->explodePath($this->namespace . Str::replaceFirst($this->basePath, null, $dirname))
+            ->explodePath($this->namespace . '\\' . $dirname)
             ->map(fn($namespace) => Str::ucfirst($namespace))
             ->join('\\');
     }
@@ -74,18 +59,22 @@ class RouteServiceProvider extends ServiceProvider
 
     public function map(): void
     {
-        $files = File::allFiles(base_path($this->routesDirectory . '\\' . $this->basePath));
+        $directories = Arr::wrap(config('routes.directories', []));
 
-        foreach ($files as $file) {
-            $path = Str::replaceFirst(base_path(), null, $file->getRealPath());
+        foreach ($directories as $directory) {
+            $files = File::allFiles(base_path("routes\\$directory"));
 
-            $dirname = Str::replaceFirst($this->routesDirectory, null, File::dirname($path));
+            foreach ($files as $file) {
+                $path = Str::replaceFirst(base_path(), null, $file->getRealPath());
 
-            $this->mapRoutes(
-                $path,
-                $this->normalizeNamespace($dirname),
-                $this->normalizePrefix($dirname)
-            );
+                $dirname = Str::replaceFirst('routes\\', null, File::dirname($path));
+
+                $this->mapRoutes(
+                    $path,
+                    $this->normalizeNamespace($dirname),
+                    $this->normalizePrefix($dirname)
+                );
+            }
         }
     }
 }
