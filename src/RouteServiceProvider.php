@@ -16,6 +16,8 @@ class RouteServiceProvider extends ServiceProvider
         $this->publishes([
             __DIR__ . '/../config/routes.php' => config_path('routes.php'),
         ], 'config');
+
+        parent::boot();
     }
 
     public function register(): void
@@ -24,12 +26,14 @@ class RouteServiceProvider extends ServiceProvider
             __DIR__ . '/../config/routes.php',
             'routes'
         );
+
+        parent::register();
     }
 
     private function mapRoutes($path, $namespace, $prefix): void
     {
         Route::namespace($namespace)
-            ->middleware(config('routes.middleware', ['web']))
+            ->middleware(config('routes.middleware'))
             ->prefix($prefix)
             ->group(base_path($path));
     }
@@ -59,7 +63,7 @@ class RouteServiceProvider extends ServiceProvider
 
     public function map(): void
     {
-        $directories = Arr::wrap(config('routes.directories', []));
+        $directories = Arr::wrap(config('routes.directories'));
 
         foreach ($directories as $directory) {
             $files = File::allFiles(base_path("routes\\$directory"));

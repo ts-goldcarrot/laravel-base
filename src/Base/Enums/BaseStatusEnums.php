@@ -19,6 +19,7 @@ class BaseStatusEnums extends BaseEnums
         return [
             self::ACTIVE,
             self::INACTIVE,
+            self::BANNED,
             self::DELETED,
         ];
     }
