@@ -3,6 +3,7 @@
 namespace GoldcarrotLaravel\Base\Repositories;
 
 
+use Exception;
 use GoldcarrotLaravel\Base\Interfaces\RepositoryInterface;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator as LengthAwarePaginatorInterface;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 abstract class BaseRepository implements RepositoryInterface
 {
@@ -23,7 +25,11 @@ abstract class BaseRepository implements RepositoryInterface
 
     protected function prepareColumnName($column): string
     {
-        return app($this->class)->qualifyColumn($column);
+        try {
+            return app($this->class)->qualifyColumn($column);
+        } catch (Exception) {
+            throw new InvalidArgumentException('Specify property $class in' . static::class . ' with ' . Model::class . ' instance classname');
+        }
     }
 
     protected function aliasOrId(Builder $query, $key, $aliasKeyName = 'alias', $keyName = 'id'): Builder
