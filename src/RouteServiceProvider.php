@@ -46,18 +46,18 @@ class RouteServiceProvider extends ServiceProvider
 
     private function normalizePath(string $path): string
     {
-        return trim(preg_replace('/[\/|\\\]+/', '/', $path), '/');
+        return trim(preg_replace('/[\/|\\\]+/', DIRECTORY_SEPARATOR, $path), DIRECTORY_SEPARATOR);
     }
 
     private function explodePath(string $path): Collection
     {
-        return collect(explode('/', $this->normalizePath($path)));
+        return collect(explode( DIRECTORY_SEPARATOR, $this->normalizePath($path)));
     }
 
     private function normalizeNamespace(string $dirname): string
     {
         return $this
-            ->explodePath($this->namespace . '\\' . $dirname)
+            ->explodePath($this->namespace . DIRECTORY_SEPARATOR . $dirname)
             ->map(fn($namespace) => Str::ucfirst($namespace))
             ->join('\\');
     }
@@ -72,12 +72,12 @@ class RouteServiceProvider extends ServiceProvider
         $directories = Arr::wrap(config('routes.directories'));
 
         foreach ($directories as $directory) {
-            $files = File::allFiles(base_path("routes\\$directory"));
+            $files = File::allFiles(base_path('routes' . DIRECTORY_SEPARATOR . $directory));
 
             foreach ($files as $file) {
                 $path = Str::replaceFirst(base_path(), null, $file->getRealPath());
 
-                $dirname = Str::replaceFirst('routes\\', null, File::dirname($path));
+                $dirname = Str::replaceFirst('routes' . DIRECTORY_SEPARATOR, null, File::dirname($path));
 
                 $this->mapRoutes(
                     $path,
