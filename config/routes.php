@@ -2,6 +2,14 @@
 
 return [
     'namespace' => 'App\Http\Controllers',
-    'middleware' => ['api'],
-    'directories' => 'api',
+
+    'modules' => [
+        'api' => [
+            'directory' => 'api',
+            'namespace' => 'api',
+            'middleware' => ['api'],
+            'prefix' => 'api',
+        ]
+    ],
+
 ];
