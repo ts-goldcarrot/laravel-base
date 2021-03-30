@@ -11,6 +11,12 @@ use Illuminate\Support\Str;
 
 class RouteServiceProvider extends ServiceProvider
 {
+    public function __construct($app)
+    {
+        $this->namespace = config('routes.namespace');
+        parent::__construct($app);
+    }
+
     public function boot(): void
     {
         $this->publishes([
