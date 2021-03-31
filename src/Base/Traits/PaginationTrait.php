@@ -4,7 +4,7 @@
  * @author Sergey Tyrgola <ts@goldcarrot.ru>
  */
 
-namespace GoldcarrotLaravel\Http\Traits;
+namespace GoldcarrotLaravel\Base\Traits;
 
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
