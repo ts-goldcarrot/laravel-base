@@ -7,9 +7,10 @@
 namespace GoldcarrotLaravel\Base\Presenters;
 
 use GoldcarrotLaravel\Base\Interfaces\PresenterInterface;
+use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 
-abstract class BasePresenter implements PresenterInterface
+abstract class BasePresenter implements PresenterInterface, Arrayable
 {
     protected Model $model;
 
